@@ -10,8 +10,8 @@ flask run --reload
 
 ## Models
 
-* Land Listings with attributes title, sale price and current funding level
-* Funders with attributes name, age, gender, email, phone, funding amount & land listing id
+* Land Listings with attributes title, sale price and listing date
+* Funders with attributes first name, last name, age, gender, email, phone, funding amount & land listing id
 
 ## Endpoints
 * GET /landListings and /funders
