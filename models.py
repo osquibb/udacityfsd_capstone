@@ -5,7 +5,9 @@ from flask_sqlalchemy import SQLAlchemy
 import json
 from dotenv import load_dotenv
 
-load_dotenv()
+if os.environ['FLASK_ENV'] == 'development':
+    load_dotenv()
+
 database_path = os.environ['DATABASE_URL']
 
 db = SQLAlchemy()
@@ -23,9 +25,6 @@ def setup_db(app, database_path=database_path):
     db.app = app
     db.init_app(app)
     db.create_all()
-
-# TODO: tighten up constraints
-# TODO: complete db relationships
 
 class LandListing(db.Model):
     __tablename__ = 'land_listing'
