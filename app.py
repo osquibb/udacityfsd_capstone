@@ -2,7 +2,7 @@ import os
 from flask import Flask, request, jsonify, abort
 import json
 from flask_cors import CORS
-from models import setup_db
+from models import LandListing, Funder, Fund, Contribution, setup_db
 
 app = Flask(__name__)
 setup_db(app)
