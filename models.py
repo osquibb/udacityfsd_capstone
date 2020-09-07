@@ -3,7 +3,9 @@ from sqlalchemy import Column, Integer, String, Numeric, Date, ForeignKey
 from sqlalchemy.orm import relationship
 from flask_sqlalchemy import SQLAlchemy
 import json
+from dotenv import load_dotenv
 
+load_dotenv()
 database_path = os.environ['DATABASE_URL']
 
 db = SQLAlchemy()
