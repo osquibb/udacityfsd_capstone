@@ -6,34 +6,45 @@ export FLASK_APP=app.py
 export FLASK_ENV=development
 flask run --reload
 ```
+
+To run initial db migration, execute:
+```bash
+export FLASK_ENV=development
+python manage.py db init
+python manage.py db migrate
+python manage.py db upgrade
+```
+
 ## Overview
 **Polyopsony** models a company that is responsible for listing land availabe for sale and managing crowdsourced funding in order to purchase and convert the land into nature preserves.
 
 ## Models
 
-* Land Listings with attributes title, sale price, listing date and fund
-* Funders with attributes first name, last name, age, gender, email, phone, funding amount & land listing id
-* Funds with 
+* Land Listings 
+* Funders
+* Funds
+* Contributions 
 
 ## Endpoints
-* GET /landListings and /funders
-* DELETE /landListings/ and /funders/
-* POST /landListings and /funders and
-* PATCH /landListings/ and /funders/
+* GET /landListings, /funders, /funds
+* DELETE /landListings/, /funders/, /contributions/
+* POST /landListings, /funders, /contributions
+* PATCH /landListings/, /funders/, /contributions/
 
 ## Roles
 #### Anonymous User
-* Can view land listings
+* Can view land listings and funds
 
 #### Funder
-* Can view land listings and funders
+* Can view land listings, funds and funders
 * Can modify own funder data
+* Can add a contribution
 
 #### Listing Manager
 * Can Add, modify or delete land listings
 
 #### Admin
-* Can Add, modifiy or delete land listings and funders
+* Can Add, modifiy or delete land listings, funders and contributions
 
 ## Tests:
 * One test for success behavior of each endpoint

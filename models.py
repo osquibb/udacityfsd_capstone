@@ -26,7 +26,7 @@ def setup_db(app, database_path=database_path):
     db.init_app(app)
     db.create_all()
 
-# TODO: Complete models
+# TODO: Complete models & re-run initial migration
 
 class LandListing(db.Model):
     __tablename__ = 'land_listing'
@@ -60,5 +60,7 @@ class Contribution(db.Model):
     __tablename__ = 'contribution'
 
     id = Column(Integer, primary_key=True)
-    funder_id = Column(db.Integer, db.ForeignKey('funder.id'))
-    fund_id = Column(db.Integer, db.ForeignKey('fund.id'))
+    date = Column(Date, nullable=False)
+    amount = Column(Numeric)
+    funder_id = Column(Integer, ForeignKey('funder.id'))
+    fund_id = Column(Integer, ForeignKey('fund.id'))
