@@ -3,13 +3,16 @@ import datetime
 from flask import Flask, request, jsonify, abort
 import json
 from flask_cors import CORS
-from models import LandListing, Funder, Fund, Contribution, setup_db
+from models import LandListing, Funder, Fund, Contribution, setup_db, db_drop_and_create_all
 
 app = Flask(__name__)
 setup_db(app)
 CORS(app)
 
-# TODO: couple inserts and deletes of land_listings with same of funds (b/c 1:1) 
+# TODO: Implement non-null FKs to prevent orphaned funds or land listings since 1:1 relationship between them?
+
+# (un)comment below for testing
+# db_drop_and_create_all()
 
 ## ROUTES
 
@@ -20,7 +23,7 @@ def hello():
             'message': 'hello'
         }), 200
 
-@app.route('/insertTest')
+@app.route('/insert', methods=['POST'])
 def insertTest():
     new_land_listing = LandListing(title='test land listing', sale_price=5000.00, listed_date=datetime.datetime(2020, 5, 17))
     new_fund = Fund(land_listing_id=new_land_listing.id)
@@ -31,7 +34,7 @@ def insertTest():
         'inserted_id': new_land_listing.id
     })
 
-@app.route('/deleteTest/<int:land_listing_id>')
+@app.route('/delete/<int:land_listing_id>', methods=['POST'])
 def deleteTest(land_listing_id):
     land_listing = LandListing.query.filter(LandListing.id == land_listing_id).one_or_none()
     land_listing.delete()
@@ -39,6 +42,25 @@ def deleteTest(land_listing_id):
     return jsonify({
         'success': True,
         'deleted_id': land_listing_id
+    })
+
+@app.route('/fund/<int:land_listing_id>')
+def getFundByLandListingID(land_listing_id):
+    fund = Fund.query.filter(Fund.land_listing_id == land_listing_id).one_or_none()
+    return jsonify({
+        'success': True,
+        'fund_id': fund.id,
+        'transaction_fee': str(fund.transaction_fee)
+    })
+
+@app.route('/fundAlt/<int:land_listing_id>')
+def getFundByLandListingIDAlt(land_listing_id):
+    land_listing = LandListing.query.filter(LandListing.id == land_listing_id).one_or_none()
+    fund = land_listing.fund
+    return jsonify({
+        'success': True,
+        'fund_id': fund.id,
+        'transaction_fee': str(fund.transaction_fee)
     })
     
 ## Error Handling

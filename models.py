@@ -23,6 +23,10 @@ def setup_db(app, database_path=database_path):
     db.init_app(app)
     db.create_all()
 
+def db_drop_and_create_all():
+    db.drop_all()
+    db.create_all()
+
 class LandListing(db.Model):
     __tablename__ = 'land_listing'
 
@@ -90,7 +94,7 @@ class Fund(db.Model):
     id = Column(Integer, primary_key=True)
     land_listing_id = Column(Integer, ForeignKey('land_listing.id'))
     land_listing = relationship("LandListing", back_populates="fund")
-    transaction_fee = Column(Numeric, default=0)
+    transaction_fee = Column(Numeric, default=50)
 
     def insert(self):
         db.session.add(self)
