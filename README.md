@@ -2,7 +2,7 @@
 
 To run the server, execute:
 ```bash
-export FLASK_APP=api.py;
+export FLASK_APP=app.py;
 flask run --reload
 ```
 ## Overview
