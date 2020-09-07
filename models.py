@@ -37,6 +37,9 @@ class LandListing(db.Model):
     listed_date = Column(Date, nullable=False)
     fund = relationship('Fund', backref='land_listing', uselist=False)
 
+    def format(self):
+        return format(self)
+
 class Funder(db.Model):
     __tablename__ = 'funder'
 
@@ -48,12 +51,18 @@ class Funder(db.Model):
     phone = Column(Integer)
     email = Column(Integer, nullable=False)
 
+    def format(self):
+        return format(self)
+
 class Fund(db.Model):
     __tablename__ = 'fund'
 
     id = Column(Integer, primary_key=True)
     land_listing = Column(Integer, ForeignKey('land_listing.id'))
     transaction_fee = Column(Numeric)
+
+    def format(self):
+        return format(self)
     
 class Contribution(db.Model):
     # association table
@@ -64,3 +73,6 @@ class Contribution(db.Model):
     amount = Column(Numeric)
     funder_id = Column(Integer, ForeignKey('funder.id'))
     fund_id = Column(Integer, ForeignKey('fund.id'))
+
+    def format(self):
+        return format(self)
