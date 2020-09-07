@@ -12,9 +12,6 @@ database_path = os.environ['DATABASE_URL']
 
 db = SQLAlchemy()
 
-def format(obj):
-    return vars(obj)
-
 '''
 setup_db(app)
     binds a flask application and a SQLAlchemy service
@@ -26,8 +23,6 @@ def setup_db(app, database_path=database_path):
     db.init_app(app)
     db.create_all()
 
-# TODO: Complete models & re-run initial migration
-
 class LandListing(db.Model):
     __tablename__ = 'land_listing'
 
@@ -35,10 +30,26 @@ class LandListing(db.Model):
     title = Column(String(120), nullable=False)
     sale_price = Column(Numeric, nullable=False)
     listed_date = Column(Date, nullable=False)
-    fund = relationship('Fund', backref='land_listing', uselist=False)
+    fund = relationship('Fund', uselist=False, back_populates='land_listing')
+
+    def insert(self):
+        db.session.add(self)
+        db.session.commit()
+
+    def delete(self):
+        db.session.delete(self)
+        db.session.commit()
+
+    def update(self):
+        db.session.commit()
 
     def format(self):
-        return format(self)
+        return {
+            'id': self.id,
+            'title': self.title,
+            'sale_price': self.sale_price,
+            'listed_date': self.listed_date
+        }
 
 class Funder(db.Model):
     __tablename__ = 'funder'
@@ -51,18 +62,53 @@ class Funder(db.Model):
     phone = Column(Integer)
     email = Column(Integer, nullable=False)
 
+    def insert(self):
+        db.session.add(self)
+        db.session.commit()
+
+    def delete(self):
+        db.session.delete(self)
+        db.session.commit()
+
+    def update(self):
+        db.session.commit()
+
     def format(self):
-        return format(self)
+        return {
+            'id': self.id,
+            'first_name': self.first_name,
+            'last_name': self.last_name,
+            'age': self.age,
+            'gender': self.gender,
+            'phone': self.phone,
+            'email': self.email
+        }
 
 class Fund(db.Model):
     __tablename__ = 'fund'
 
     id = Column(Integer, primary_key=True)
-    land_listing = Column(Integer, ForeignKey('land_listing.id'))
-    transaction_fee = Column(Numeric)
+    land_listing_id = Column(Integer, ForeignKey('land_listing.id'))
+    land_listing = relationship("LandListing", back_populates="fund")
+    transaction_fee = Column(Numeric, default=0)
+
+    def insert(self):
+        db.session.add(self)
+        db.session.commit()
+
+    def delete(self):
+        db.session.delete(self)
+        db.session.commit()
+
+    def update(self):
+        db.session.commit()
 
     def format(self):
-        return format(self)
+        return {
+            'id': self.id,
+            'land_listing_id': self.land_listing_id,
+            'transaction_fee': self.transaction_fee
+        }
     
 class Contribution(db.Model):
     # association table
@@ -74,5 +120,22 @@ class Contribution(db.Model):
     funder_id = Column(Integer, ForeignKey('funder.id'))
     fund_id = Column(Integer, ForeignKey('fund.id'))
 
+    def insert(self):
+        db.session.add(self)
+        db.session.commit()
+
+    def delete(self):
+        db.session.delete(self)
+        db.session.commit()
+
+    def update(self):
+        db.session.commit()
+
     def format(self):
-        return format(self)
+        return {
+            'id': self.id,
+            'date': self.date,
+            'amount': self.amount,
+            'funder_id': self.funder_id,
+            'fund_id': self.fund_id
+        }
