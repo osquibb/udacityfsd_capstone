@@ -37,14 +37,14 @@ def get_land_listings():
 @app.route('/land_listings/<int:land_listing_id>')
 def get_land_listing_details(land_listing_id):
     land_listing = LandListing.query.get(land_listing_id)
-    fund = land_listing.funds
-    formatted_contributions = [ contribution.format() for contribution in fund.contributions ]
+    formatted_contributions = [ contribution.format() for contribution in land_listing.contributions  ]
+    total_contributions = sum([ contribution.amount for contribution in land_listing.contributions ])
 
     return jsonify({
             'success': True,
             'land_listing': land_listing.format(),
-            'fund': fund.format(),
-            'contributions': formatted_contributions
+            'contributions': formatted_contributions,
+            'total_contributions': str(total_contributions)
         }), 200
 
 @app.route('/land_listings', methods=['POST'])
@@ -102,13 +102,16 @@ def contribute_to_fund(fund_id):
     body = request.get_json()
     amount = body.get('amount', None)
     funder_id = body.get('funder_id', None)
+    land_listing_id = body.get('land_listing_id', None)
     funder = Funder.query.filter(Funder.id == funder_id).one_or_none()
+    land_listing = LandListing.query.filter(LandListing.id == land_listing_id).one_or_none()
     fund = Fund.query.filter(Fund.id == fund_id).one_or_none()
+    # TODO: verify that fund is associated with the listing
 
-    if fund is None or funder is None or math.isnan(amount):
+    if fund is None or funder is None or land_listing is None or math.isnan(amount):
         abort(422)
 
-    contribution = Contribution(funder_id=funder.id, fund_id=fund.id, date=datetime.date.today(), amount=amount)
+    contribution = Contribution(funder_id=funder.id, land_listing_id=land_listing.id, fund_id=fund.id, date=datetime.date.today(), amount=amount)
     contribution.insert()
 
     return jsonify({

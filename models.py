@@ -5,6 +5,8 @@ from flask_sqlalchemy import SQLAlchemy
 import json
 from dotenv import load_dotenv
 
+# TODO: make fund:land_listing many-to-one?
+
 if os.environ['FLASK_ENV'] == 'development':
     load_dotenv()
 
@@ -43,20 +45,24 @@ class LandListing(db.Model):
     sale_price = Column(Numeric, nullable=False)
     listed_date = Column(Date, nullable=False)
 
-    # relationships
-    funds = relationship('Fund', uselist=False, back_populates='land_listings')
-
     def insert(self):
         db.session.add(self)
-        new_fund = Fund(land_listing_id=self.id, land_listings=self)
-        db.session.add(new_fund)
+        funds = Fund.query.filter(Fund.land_listing_id == self.id).one_or_none()
+
+        if funds is None:
+            new_fund = Fund(land_listing_id=self.id)
+            db.session.add(new_fund)
+
         db.session.commit()
 
     def delete(self):
-        associated_fund = Fund.query.filter(Fund.land_listing_id == self.id).one_or_none()
-        db.session.delete(associated_fund)
-        db.session.delete(self)
-        db.session.commit()
+        funds = Fund.query.filter(Fund.land_listing_id == self.id).all()
+
+        if len(funds) > 0:
+            raise Exception('Cannot delete LandListing with associated funds.')
+        else:
+            db.session.delete(self)
+            db.session.commit()
 
     def update(self):
         db.session.commit()
@@ -128,18 +134,19 @@ class Fund(db.Model):
     transaction_fee = Column(Numeric, default=50.00)
 
     # relationships
-    land_listings = relationship('LandListing', back_populates='funds')
-    contributions = relationship('Contribution', back_populates='funds')
+    land_listing = relationship('LandListing', backref='funds')
     funders = relationship('Funder', secondary='contributions')
 
     def insert(self):
-        raise Exception('No Insert method for Fund. A new Fund is automatically inserted each time a new Land Listing is inserted.')
+        db.session.add(self)
+        db.session.commit()
 
     def update(self):
         db.session.commit()
 
     def delete(self):
-        raise Exception('No Delete method for Fund. The Fund is automatically deleted when the associated Land Listing is deleted.')
+        db.session.delete(self)
+        db.session.commit()
 
     def format(self):
         return {
@@ -152,16 +159,20 @@ class Contribution(db.Model):
     # associative table
     __tablename__ = 'contributions'
 
-    # FKs / composite PK
-    funder_id = Column(Integer, ForeignKey('funders.funder_id'), primary_key=True)
-    fund_id = Column(Integer, ForeignKey('funds.fund_id'), primary_key=True)
+    # PK
+    id = Column('contribution_id', Integer, primary_key=True)
+
+    # FKs
+    funder_id = Column(Integer, ForeignKey('funders.funder_id'))
+    land_listing_id = Column(Integer, ForeignKey('land_listings.land_listing_id'))
+    fund_id = Column(Integer, ForeignKey('funds.fund_id'))
 
     # non-key fields
     date = Column(Date, nullable=False)
     amount = Column(Numeric, default=0.00)
 
     # relationships
-    funds = relationship('Fund', back_populates='contributions')
+    land_listing = relationship('LandListing', backref='contributions')
 
     def insert(self):
         db.session.add(self)
