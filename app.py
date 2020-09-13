@@ -64,7 +64,8 @@ def create_land_listing():
 
     return jsonify({
         'success': True,
-        'land_listing_id': new_land_listing.id
+        'land_listing_id': new_land_listing.id,
+        'initial_fund_id': new_land_listing.funds[0].id
     }), 200
 
 @app.route('/funders')
