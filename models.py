@@ -28,19 +28,33 @@ def db_drop_and_create_all():
     db.create_all()
 
 class LandListing(db.Model):
-    __tablename__ = 'land_listing'
+    __tablename__ = 'land_listings'
 
-    id = Column(Integer, primary_key=True)
+    # PK
+    id = Column('land_listing_id', Integer, primary_key=True)
+
+    # non-key fields
     title = Column(String(120), nullable=False)
+    address_1 = Column(String(40))
+    address_2 = Column(String(40))
+    city = Column(String(20), nullable=False)
+    state = Column(String(12), nullable=False)
+    zipcode = Column(Integer, nullable=False)
     sale_price = Column(Numeric, nullable=False)
     listed_date = Column(Date, nullable=False)
-    fund = relationship('Fund', uselist=False, back_populates='land_listing')
+
+    # relationships
+    funds = relationship('Fund', uselist=False, back_populates='land_listings')
 
     def insert(self):
         db.session.add(self)
+        new_fund = Fund(land_listing_id=self.id, land_listings=self)
+        db.session.add(new_fund)
         db.session.commit()
 
     def delete(self):
+        associated_fund = Fund.query.filter(Fund.land_listing_id == self.id).one_or_none()
+        db.session.delete(associated_fund)
         db.session.delete(self)
         db.session.commit()
 
@@ -51,30 +65,43 @@ class LandListing(db.Model):
         return {
             'id': self.id,
             'title': self.title,
-            'sale_price': self.sale_price,
+            'address': {
+                'address_1': self.address_1,
+                'address_2': self.address_2,
+                'city': self.city,
+                'state': self.state,
+                'zipcode': self.zipcode
+            },
+            'sale_price': str(self.sale_price),
             'listed_date': self.listed_date
         }
 
 class Funder(db.Model):
-    __tablename__ = 'funder'
+    __tablename__ = 'funders'
 
-    id = Column(Integer, primary_key=True)
+    # PK
+    id = Column('funder_id', Integer, primary_key=True)
+
+    # non-key fields
     first_name = Column(String(50), nullable=False)
     last_name = Column(String(50), nullable=False)
     age = Column(Integer)
     gender = Column(String(10))
-    phone = Column(Integer)
-    email = Column(Integer, nullable=False)
+    phone = Column(Integer, nullable=False)
+    email = Column(String(25), nullable=False)
+
+    # relationships
+    funds = relationship('Fund', secondary='contributions')
 
     def insert(self):
         db.session.add(self)
         db.session.commit()
 
-    def delete(self):
-        db.session.delete(self)
+    def update(self):
         db.session.commit()
 
-    def update(self):
+    def delete(self):
+        db.session.delete(self)
         db.session.commit()
 
     def format(self):
@@ -89,57 +116,68 @@ class Funder(db.Model):
         }
 
 class Fund(db.Model):
-    __tablename__ = 'fund'
+    __tablename__ = 'funds'
 
-    id = Column(Integer, primary_key=True)
-    land_listing_id = Column(Integer, ForeignKey('land_listing.id'))
-    land_listing = relationship("LandListing", back_populates="fund")
-    transaction_fee = Column(Numeric, default=50)
+    # PK
+    id = Column('fund_id', Integer, primary_key=True)
+
+    # FK
+    land_listing_id = Column(Integer, ForeignKey('land_listings.land_listing_id'), nullable=False)
+
+    # non-key fields
+    transaction_fee = Column(Numeric, default=50.00)
+
+    # relationships
+    land_listings = relationship('LandListing', back_populates='funds')
+    contributions = relationship('Contribution', back_populates='funds')
+    funders = relationship('Funder', secondary='contributions')
 
     def insert(self):
-        db.session.add(self)
-        db.session.commit()
-
-    def delete(self):
-        db.session.delete(self)
-        db.session.commit()
+        raise Exception('No Insert method for Fund. A new Fund is automatically inserted each time a new Land Listing is inserted.')
 
     def update(self):
         db.session.commit()
+
+    def delete(self):
+        raise Exception('No Delete method for Fund. The Fund is automatically deleted when the associated Land Listing is deleted.')
 
     def format(self):
         return {
             'id': self.id,
             'land_listing_id': self.land_listing_id,
-            'transaction_fee': self.transaction_fee
+            'transaction_fee': str(self.transaction_fee)
         }
     
 class Contribution(db.Model):
-    # association table
-    __tablename__ = 'contribution'
+    # associative table
+    __tablename__ = 'contributions'
 
-    id = Column(Integer, primary_key=True)
+    # FKs / composite PK
+    funder_id = Column(Integer, ForeignKey('funders.funder_id'), primary_key=True)
+    fund_id = Column(Integer, ForeignKey('funds.fund_id'), primary_key=True)
+
+    # non-key fields
     date = Column(Date, nullable=False)
-    amount = Column(Numeric)
-    funder_id = Column(Integer, ForeignKey('funder.id'))
-    fund_id = Column(Integer, ForeignKey('fund.id'))
+    amount = Column(Numeric, default=0.00)
+
+    # relationships
+    funds = relationship('Fund', back_populates='contributions')
 
     def insert(self):
         db.session.add(self)
+        db.session.commit()
+
+    def update(self):
         db.session.commit()
 
     def delete(self):
         db.session.delete(self)
         db.session.commit()
 
-    def update(self):
-        db.session.commit()
-
     def format(self):
         return {
-            'id': self.id,
-            'date': self.date,
-            'amount': self.amount,
             'funder_id': self.funder_id,
-            'fund_id': self.fund_id
+            'fund_id': self.fund_id,
+            'date': self.date,
+            'amount': str(self.amount)
         }
