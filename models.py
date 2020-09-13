@@ -173,6 +173,7 @@ class Contribution(db.Model):
 
     # relationships
     land_listing = relationship('LandListing', backref='contributions')
+    funder = relationship('Funder', backref='contributions')
 
     def insert(self):
         db.session.add(self)

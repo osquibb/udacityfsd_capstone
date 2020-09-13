@@ -16,10 +16,10 @@ CORS(app)
 ## ROUTES
 
 @app.route('/')
-def hello():
+def health_check():
     return jsonify({
             'success': True,
-            'message': 'hello'
+            'status': 'connected'
         }), 200
 
 @app.route('/land_listings')
@@ -97,27 +97,54 @@ def create_funder():
         'funder_id': new_funder.id
     }), 200
 
-@app.route('/funds/<int:fund_id>', methods=['POST'])
-def contribute_to_fund(fund_id):
+@app.route('/funders/<int:funder_id>')
+def get_funder_details(funder_id):
+    funder = Funder.query.get(funder_id)
+    formatted_contributions = [ contribution.format() for contribution in funder.contributions  ]
+    total_contributions = sum([ contribution.amount for contribution in funder.contributions ])
+    
+
+
+    return jsonify({
+        'success': True,
+        'funder': funder.format(),
+        'contributions': formatted_contributions,
+        'total_contributions': str(total_contributions)
+    }), 200
+
+
+@app.route('/land_listings/<int:land_listing_id>/funds/<int:fund_id>', methods=['POST'])
+def contribute_to_fund(land_listing_id, fund_id):
     body = request.get_json()
     amount = body.get('amount', None)
     funder_id = body.get('funder_id', None)
-    land_listing_id = body.get('land_listing_id', None)
-    funder = Funder.query.filter(Funder.id == funder_id).one_or_none()
-    land_listing = LandListing.query.filter(LandListing.id == land_listing_id).one_or_none()
-    fund = Fund.query.filter(Fund.id == fund_id).one_or_none()
-    # TODO: verify that fund is associated with the listing
 
-    if fund is None or funder is None or land_listing is None or math.isnan(amount):
+    if math.isnan(amount):
         abort(422)
 
-    contribution = Contribution(funder_id=funder.id, land_listing_id=land_listing.id, fund_id=fund.id, date=datetime.date.today(), amount=amount)
-    contribution.insert()
+    funder = Funder.query.filter(Funder.id == funder_id).one_or_none()
+
+    if funder is None:
+        abort(422)
+
+    land_listing = LandListing.query.filter(LandListing.id == land_listing_id).one_or_none()
+    fund = Fund.query.filter(Fund.id == fund_id).one_or_none()
+
+    if land_listing is None or fund is None:
+        abort(422)
+
+    land_listing_fund_ids = [ fund.id for fund in land_listing.funds ]
+
+    if fund_id not in land_listing_fund_ids:
+        abort(422)
+
+    new_contribution = Contribution(funder_id=funder.id, land_listing_id=land_listing.id, fund_id=fund.id, date=datetime.date.today(), amount=amount)
+    new_contribution.insert()
 
     return jsonify({
-            'success': True,
-            'contribution': contribution.format(),
-        }), 200
+        'success': True,
+        'contribution': new_contribution.format(),
+    }), 200
 
 # testing START...
 
