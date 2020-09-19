@@ -63,8 +63,3 @@ python manage.py db upgrade
 
 #### Admin
 * Can Add, modifiy or delete land listings, funders and contributions
-
-## Tests:
-* One test for success behavior of each endpoint
-* One test for error behavior of each endpoint
-* At least two tests of RBAC for each role
