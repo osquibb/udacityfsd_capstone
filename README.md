@@ -37,12 +37,15 @@ python manage.py db upgrade
 * /land_listings/**{land_listing_id}**
 * /funders
 * /funders/**{funder_id}**
+
 **POST**
 * /land_listings
 * /funders
 * /land_listings/**{land_listing_id}**/funds/**{fund_id}**
+
 **PATCH**
 * /funders/**{funder_id}**
+
 **DELETE**
 * /contributions/**{contribution_id}**
 
