@@ -1,9 +1,9 @@
 import os
 import unittest
 import json
+import datetime
 from flask_sqlalchemy import SQLAlchemy
 from flask import Flask, request, jsonify, abort
-from app import create_app
 from models import LandListing, Funder, Fund, Contribution, setup_db, db_drop_and_create_all
 
 # TODO: create common setup_db() function
@@ -16,16 +16,50 @@ def create_test_land_listing():
         state='NC',
         zipcode=28801,
         sale_price=5000.00,
-        listed_date="06/02/2020"
+        listed_date='06/02/2020'
     )
     land_listing.insert()
 
-    return land_listing.id
+    return { 
+        'land_listing_id': land_listing.id,
+        'initial_fund_id': land_listing.funds[0].id
+    }
 
 def delete_land_listing(land_listing_id):
     land_listing = LandListing.query.get(land_listing_id)
     fund = land_listing.funds[0].delete()
     land_listing.delete()
+
+def create_test_funder():
+    funder = Funder(
+        first_name='John',
+        last_name='Smith',
+        age=35,
+        gender='Male',
+        phone=1234567890,
+        email='test@test.com'  
+    )
+    funder.insert()
+
+    return funder.id
+
+def delete_funder(funder_id):
+    Funder.query.get(funder_id).delete()
+
+def create_test_contribution(funder_id, land_listing_id, fund_id):
+    contribution = Contribution(
+        funder_id=funder_id,
+        land_listing_id=land_listing_id,
+        fund_id=fund_id,
+        date=datetime.date.today(),
+        amount=10.25
+    )
+    contribution.insert()
+
+    return contribution.id
+
+def delete_contribution(contribution_id):
+    Contribution.query.get(contribution_id).delete()
 
 class PolyopsonyTest(unittest.TestCase):
 
@@ -48,25 +82,255 @@ class PolyopsonyTest(unittest.TestCase):
         # db_drop_and_create_all()
         pass
 
-    def test_success_get_land_listings(self):
-        land_listing_id = create_test_land_listing()
+    def test_get_land_listings_200(self):
+        test_ids = create_test_land_listing()
 
         res = self.client().get('/land_listings')
         data = json.loads(res.data)
-
+        
         self.assertEqual(res.status_code, 200)
-        self.assertEqual(data['success'], True)
+        self.assertTrue(data['success'])
         self.assertTrue(data['land_listings'])
 
-        delete_land_listing(land_listing_id)
+        delete_land_listing(test_ids['land_listing_id'])
 
-    def test_error_get_land_listings(self):
+    def test_get_land_listings_404(self):
         res = self.client().get('/land_listings')
         data = json.loads(res.data)
 
         self.assertEqual(res.status_code, 404)
-        self.assertEqual(data['success'], False)
+        self.assertFalse(data['success'])
         self.assertFalse(data['land_listings'])
     
-    def test_success_create_land_listing(self):
-        pass
+    def test_get_land_listing_details_200(self):
+        test_ids = create_test_land_listing()
+
+        res = self.client().get('/land_listings/' + land_listing_id)
+        data = json.loads(res.data)
+
+        self.assertEqual(res.status_code, 200)
+        self.assertTrue(data['success'])
+        self.assertTrue(data['land_listing'])
+
+        delete_land_listing(test_ids['land_listing_id'])
+
+    def test_get_land_listing_details_404(self):
+        res = self.client().get('/land_listings/10')
+        data = json.loads(res.data)
+
+        self.assertEqual(res.status_code, 404)
+        self.assertFalse(data['success'])
+        self.assertFalse(data['land_listing'])
+
+    def test_create_land_listing_200(self):
+        valid_land_listing = {
+            'title': 'Test Land Listing',
+            'address_1': '123 Main Street',
+            'city': 'Asheville',
+            'state': 'NC',
+            'zipcode': '28801',
+            'sale_price': '5000.00',
+            'listed_date': '06/02/2020'
+        }
+
+        res = self.client().post('/land_listings', json=valid_land_listing)
+        data = json.loads(res.data)
+
+        self.assertEqual(res.status_code, 200)
+        self.assertTrue(data['success'])
+        self.assertTrue(data['land_listing_id'])
+        self.assertTrue(data['initial_fund_id'])
+
+        delete_land_listing(data['land_listing_id'])
+
+    def test_create_land_listing_422(self):
+        invalid_land_listing = {
+            'title': 'Test Land Listing',
+            'address': '123 Main Street',
+            'city': 'Asheville',
+            'state': 'NC',
+            'zip': '28801'
+        }
+
+        res = self.client().post('/land_listings', json=invalid_land_listing)
+        data = json.loads(res.data)
+
+        self.assertEqual(res.status_code, 422)
+        self.assertFalse(data['success'])
+        self.assertFalse(data['land_listing_id'])
+        self.assertFalse(data['initial_fund_id'])
+
+    def test_get_funders_200(self):
+        funder_id = create_test_funder()
+
+        res = self.client().get('/funders')
+        data = json.loads(res.data)
+        
+        self.assertEqual(res.status_code, 200)
+        self.assertTrue(data['success'])
+        self.assertTrue(data['funders'])
+
+        delete_funder(funder_id)
+
+    def test_get_funders_404(self):
+        res = self.client().get('/funders')
+        data = json.loads(res.data)
+        
+        self.assertEqual(res.status_code, 404)
+        self.assertFalse(data['success'])
+        self.assertFalse(data['funders'])
+
+    def test_create_funder_200(self):
+
+        valid_funder = {
+            'first_name': 'John',
+            'last_name': 'Smith',
+            'age': '35',
+            'gender': 'Male',
+            'phone': '1234567890',
+            'email': 'test@test.com',
+        }
+
+        res = self.client().post('/funders', json=valid_funder)
+        data = json.loads(res.data)
+        
+        self.assertEqual(res.status_code, 200)
+        self.assertTrue(data['success'])
+        self.assertTrue(data['funder_id'])
+
+        delete_funder(data['funder_id'])
+
+    def test_create_funder_422(self):
+
+        invalid_funder = {
+            'name': 'John',
+            'phone_num': '1234567890',
+            'email': 'test@test.com',
+        }
+
+        res = self.client().post('/funders', json=invalid_funder)
+        data = json.loads(res.data)
+        
+        self.assertEqual(res.status_code, 422)
+        self.assertFalse(data['success'])
+        self.assertFalse(data['funder_id'])
+
+    def test_get_funder_details_200(self):
+        funder_id = create_test_funder()
+
+        res = self.client().get('/funders/' + funder_id)
+        data = json.loads(res.data)
+
+        self.assertEqual(res.status_code, 200)
+        self.assertTrue(data['success'])
+        self.assertTrue(data['funder'])
+
+        delete_land_listing(funder_id)
+
+    def test_get_funder_details_404(self):
+        res = self.client().get('/funders/10')
+        data = json.loads(res.data)
+
+        self.assertEqual(res.status_code, 404)
+        self.assertFalse(data['success'])
+        self.assertFalse(data['funder'])
+
+    def test_update_funder_200(self):
+        funder_id = create_test_funder()
+
+        valid_updates = {
+            'last_name': 'Green',
+            'age': '40'
+        }
+
+        res = self.client().patch('/funders/' + funder_id, json=valid_updates)
+        data = json.loads(res.data)
+
+        self.assertEqual(res.status_code, 200)
+        self.assertTrue(data['success'])
+        self.assertTrue(data['funder'])
+
+        delete_land_listing(funder_id)
+
+    def test_update_funder_422(self):
+        funder_id = create_test_funder()
+
+        invalid_updates = {
+            'name': 'Green'
+        }
+
+        res = self.client().patch('/funders/' + funder_id, json=invalid_updates)
+        data = json.loads(res.data)
+
+        self.assertEqual(res.status_code, 422)
+        self.assertFalse(data['success'])
+        self.assertFalse(data['funder'])
+
+    def test_contribute_to_fund_200(self):
+        test_ids = create_test_land_listing()
+        funder_id = create_test_funder()
+
+        valid_contribution = {
+            'amount': '10.25',
+            'funder_id': funder_id
+        }
+
+        res = self.client().post('/land_listings/' +
+            test_ids['land_listing_id'] + '/funds/' +
+            test_ids['initial_fund_id'], json=valid_contribution)
+        data = json.loads(res.data)
+
+        self.assertEqual(res.status_code, 200)
+        self.assertTrue(data['success'])
+        self.assertTrue(data['contribution'])
+
+        delete_land_listing(test_ids['land_listing_id'])
+        delete_funder(funder_id)
+
+    def test_contribute_to_fund_422(self):
+        test_ids = create_test_land_listing()
+        funder_id = create_test_funder()
+
+        invalid_contribution = {
+            'amount': 'abcd',
+            'funder_id': funder_id
+        }
+
+        res = self.client().post('/land_listings/' +
+            test_ids['land_listing_id'] + '/funds/' +
+            test_ids['initial_fund_id'], json=invalid_contribution)
+        data = json.loads(res.data)
+
+        self.assertEqual(res.status_code, 422)
+        self.assertFalse(data['success'])
+        self.assertFalse(data['contribution'])
+
+        delete_land_listing(test_ids['land_listing_id'])
+        delete_funder(funder_id)
+
+    def test_delete_contribution_200(self):
+        test_ids = create_test_land_listing()
+        funder_id = create_test_funder()
+        contribution_id = create_test_contribution(funder_id, test_ids['land_listing_id'], test_ids['initial_fund_id'])
+
+        res = self.client().delete('/contributions/' + contribution_id)
+        data = json.loads(res.data)
+
+        self.assertEqual(res.status_code, 200)
+        self.assertTrue(data['success'])
+        self.assertTrue(data['deleted_contribution_id'])
+
+        delete_contribution(contribution_id)
+        delete_land_listing(test_ids['land_listing_id'])
+        delete_funder(funder_id)
+
+    def test_delete_contribution_404(self):
+        res = self.client().delete('/contributions/10')
+        data = json.loads(res.data)
+
+        self.assertEqual(res.status_code, 404)
+        self.assertFalse(data['success'])
+        self.assertFalse(data['deleted_contribution_id'])
+
+if __name__ == "__main__":
+    unittest.main()

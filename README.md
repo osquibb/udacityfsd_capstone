@@ -7,6 +7,12 @@ export FLASK_ENV=development
 flask run --reload
 ```
 
+To run tests, execute:
+```bash
+export FLASK_ENV=development
+python test.py
+```
+
 To run initial db migration, execute:
 ```bash
 export FLASK_ENV=development
