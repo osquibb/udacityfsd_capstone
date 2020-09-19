@@ -5,6 +5,7 @@ import datetime
 from flask_sqlalchemy import SQLAlchemy
 from flask import Flask, request, jsonify, abort
 from app import create_app
+from dotenv import load_dotenv
 from models import LandListing, Funder, Fund, Contribution, setup_db, db_drop_and_create_all
 
 # TODO: create common setup_db() function
@@ -65,10 +66,11 @@ def delete_contribution(contribution_id):
 class PolyopsonyTest(unittest.TestCase):
 
     def setUp(self):
+        if os.environ['FLASK_ENV'] == 'development':
+            load_dotenv()
         self.app = create_app()
         self.client = self.app.test_client
-        self.database_name = "polyop_test"
-        self.database_path = "postgres://{}/{}".format('localhost:5432', self.database_name)
+        self.database_path = os.environ['TEST_DATABASE_URL']
         setup_db(self.app, self.database_path)
         
         # binds the app to the current context
