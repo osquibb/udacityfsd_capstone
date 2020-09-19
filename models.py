@@ -5,8 +5,6 @@ from flask_sqlalchemy import SQLAlchemy
 import json
 from dotenv import load_dotenv
 
-# TODO: make fund:land_listing many-to-one?
-
 if os.environ['FLASK_ENV'] == 'development':
     load_dotenv()
 
@@ -188,6 +186,7 @@ class Contribution(db.Model):
 
     def format(self):
         return {
+            'contribution_id': self.id,
             'funder_id': self.funder_id,
             'fund_id': self.fund_id,
             'date': self.date,

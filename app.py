@@ -10,6 +10,10 @@ app = Flask(__name__)
 setup_db(app)
 CORS(app)
 
+# TODO: add @requires_auth() wrappers
+# TODO: extend CORS - see trivia api
+# TODO: create common create_app() function
+
 # (un)comment below for testing
 # db_drop_and_create_all()
 
@@ -37,36 +41,48 @@ def get_land_listings():
 @app.route('/land_listings/<int:land_listing_id>')
 def get_land_listing_details(land_listing_id):
     land_listing = LandListing.query.get(land_listing_id)
-    formatted_contributions = [ contribution.format() for contribution in land_listing.contributions  ]
-    total_contributions = sum([ contribution.amount for contribution in land_listing.contributions ])
 
-    return jsonify({
-            'success': True,
-            'land_listing': land_listing.format(),
-            'contributions': formatted_contributions,
-            'total_contributions': str(total_contributions)
-        }), 200
+    if land_listing is None:
+        abort(404)
+
+    try:
+        formatted_contributions = [ contribution.format() for contribution in land_listing.contributions  ]
+        total_contributions = sum([ contribution.amount for contribution in land_listing.contributions ])
+
+        return jsonify({
+                'success': True,
+                'land_listing': land_listing.format(),
+                'contributions': formatted_contributions,
+                'total_contributions': str(total_contributions)
+            }), 200
+
+    except:
+        abort(422)
 
 @app.route('/land_listings', methods=['POST'])
 def create_land_listing():
-    body = request.get_json()
-    title = body.get('title', None)
-    address_1 = body.get('address_1', None)
-    address_2 = body.get('address_2', None)
-    city = body.get('city', None)
-    state = body.get('state', None)
-    zipcode = body.get('zipcode', None)
-    sale_price = body.get('sale_price', None)
-    listed_date = body.get('listed_date', None)
+    try:
+        body = request.get_json()
+        title = body.get('title', None)
+        address_1 = body.get('address_1', None)
+        address_2 = body.get('address_2', None)
+        city = body.get('city', None)
+        state = body.get('state', None)
+        zipcode = body.get('zipcode', None)
+        sale_price = body.get('sale_price', None)
+        listed_date = body.get('listed_date', None)
 
-    new_land_listing = LandListing(title=title, address_1=address_1, address_2=address_2, city=city, state=state, zipcode=zipcode, sale_price=sale_price, listed_date=listed_date)
-    new_land_listing.insert()
+        new_land_listing = LandListing(title=title, address_1=address_1, address_2=address_2, city=city, state=state, zipcode=zipcode, sale_price=sale_price, listed_date=listed_date)
+        new_land_listing.insert()
 
-    return jsonify({
-        'success': True,
-        'land_listing_id': new_land_listing.id,
-        'initial_fund_id': new_land_listing.funds[0].id
-    }), 200
+        return jsonify({
+            'success': True,
+            'land_listing_id': new_land_listing.id,
+            'initial_fund_id': new_land_listing.funds[0].id
+        }), 200
+
+    except:
+        abort(422)
 
 @app.route('/funders')
 def get_funders():
@@ -82,37 +98,77 @@ def get_funders():
 
 @app.route('/funders', methods=['POST'])
 def create_funder():
-    body = request.get_json()
-    first_name = body.get('first_name', None)
-    last_name = body.get('last_name', None)
-    age = body.get('age', None)
-    gender = body.get('gender', None)
-    phone = body.get('phone', None)
-    email = body.get('email', None)
+    try:
+        body = request.get_json()
+        first_name = body.get('first_name', None)
+        last_name = body.get('last_name', None)
+        age = body.get('age', None)
+        gender = body.get('gender', None)
+        phone = body.get('phone', None)
+        email = body.get('email', None)
 
-    new_funder = Funder(first_name=first_name, last_name=last_name, phone=phone, email=email)
-    new_funder.insert()
+        new_funder = Funder(first_name=first_name, last_name=last_name, age=age, gender=gender, phone=phone, email=email)
+        new_funder.insert()
 
-    return jsonify({
-        'success': True,
-        'funder_id': new_funder.id
-    }), 200
+        return jsonify({
+            'success': True,
+            'funder_id': new_funder.id
+        }), 200
+
+    except:
+        abort(422)
 
 @app.route('/funders/<int:funder_id>')
 def get_funder_details(funder_id):
     funder = Funder.query.get(funder_id)
-    formatted_contributions = [ contribution.format() for contribution in funder.contributions  ]
-    total_contributions = sum([ contribution.amount for contribution in funder.contributions ])
-    
+    if funder is None:
+        abort(404)
 
+    try:  
+        formatted_contributions = [ contribution.format() for contribution in funder.contributions  ]
+        total_contributions = sum([ contribution.amount for contribution in funder.contributions ])
+        
+        return jsonify({
+            'success': True,
+            'funder': funder.format(),
+            'contributions': formatted_contributions,
+            'total_contributions': str(total_contributions)
+        }), 200
 
-    return jsonify({
-        'success': True,
-        'funder': funder.format(),
-        'contributions': formatted_contributions,
-        'total_contributions': str(total_contributions)
-    }), 200
+    except:
+        abort(422)
 
+@app.route('/funders/<int:funder_id>', methods=['PATCH'])
+def update_funder(funder_id):
+    funder = Funder.query.get(funder_id)
+
+    if funder is None:
+        abort(404)
+
+    try:
+        body = request.get_json()
+        updates = { 
+            'first_name': body.get('first_name', None),
+            'last_name': body.get('last_name', None),
+            'age': body.get('age', None),
+            'gender': body.get('gender', None),
+            'phone': body.get('phone', None),
+            'email': body.get('email', None)
+        }
+
+        for attribute in updates:
+            if updates[attribute] is not None:
+                setattr(funder, attribute, updates[attribute])
+
+        funder.update()
+
+        return jsonify({
+                'success': True,
+                'funder': funder.format()
+            }), 200
+
+    except:
+        abort(422)
 
 @app.route('/land_listings/<int:land_listing_id>/funds/<int:fund_id>', methods=['POST'])
 def contribute_to_fund(land_listing_id, fund_id):
@@ -123,80 +179,47 @@ def contribute_to_fund(land_listing_id, fund_id):
     if math.isnan(amount):
         abort(422)
 
-    funder = Funder.query.filter(Funder.id == funder_id).one_or_none()
+    land_listing = LandListing.query.get(land_listing_id)
+    fund = Fund.query.get(fund_id)
+    funder = Funder.query.get(funder_id)
 
-    if funder is None:
-        abort(422)
-
-    land_listing = LandListing.query.filter(LandListing.id == land_listing_id).one_or_none()
-    fund = Fund.query.filter(Fund.id == fund_id).one_or_none()
-
-    if land_listing is None or fund is None:
-        abort(422)
+    if (land_listing is None) or (fund is None) or (funder is None):
+        abort(404)
 
     land_listing_fund_ids = [ fund.id for fund in land_listing.funds ]
 
     if fund_id not in land_listing_fund_ids:
         abort(422)
 
-    new_contribution = Contribution(funder_id=funder.id, land_listing_id=land_listing.id, fund_id=fund.id, date=datetime.date.today(), amount=amount)
-    new_contribution.insert()
+    try:
+        new_contribution = Contribution(funder_id=funder.id, land_listing_id=land_listing.id, fund_id=fund.id, date=datetime.date.today(), amount=amount)
+        new_contribution.insert()
 
-    return jsonify({
+        return jsonify({
+            'success': True,
+            'contribution': new_contribution.format(),
+        }), 200
+
+    except:
+        abort(422)
+
+@app.route('/contributions/<int:contribution_id>', methods=['DELETE'])
+def delete_contribution(contribution_id):
+    contribution = Contribution.query.get(contribution_id)
+
+    if contribution is None:
+        abort(404)
+    
+    try:
+      contribution.delete()
+
+      return jsonify({
         'success': True,
-        'contribution': new_contribution.format(),
-    }), 200
+        'deleted_contribution_id': contribution_id
+      }), 200
 
-# testing START...
-
-@app.route('/insert', methods=['POST'])
-def insertTest():
-    new_land_listing = LandListing(
-        title='test land listing',
-        city='Asheville',
-        state='NC',
-        zipcode=28801,
-        sale_price=5000.00,
-        listed_date=datetime.datetime(2020, 5, 17)
-    )
-    new_land_listing.insert()
-    return jsonify({
-        'success': True,
-        'inserted_id': new_land_listing.id
-    })
-
-@app.route('/delete/<int:land_listing_id>', methods=['POST'])
-def deleteTest(land_listing_id):
-    land_listing = LandListing.query.filter(LandListing.id == land_listing_id).one_or_none()
-    land_listing.delete()
-
-    return jsonify({
-        'success': True,
-        'deleted_id': land_listing_id
-    })
-
-@app.route('/fund/<int:land_listing_id>')
-def getFundByLandListingID(land_listing_id):
-    fund = Fund.query.filter(Fund.land_listing_id == land_listing_id).one_or_none()
-    return jsonify({
-        'success': True,
-        'fund_id': fund.id,
-        'transaction_fee': str(fund.transaction_fee)
-    })
-
-@app.route('/fundAlt/<int:land_listing_id>')
-def getFundByLandListingIDAlt(land_listing_id):
-    land_listing = LandListing.query.filter(LandListing.id == land_listing_id).one_or_none()
-    fund = land_listing.fund
-    return jsonify({
-        'success': True,
-        'fund_id': fund.id,
-        'transaction_fee': str(fund.transaction_fee)
-    })
-
-# testing END
-
-
+    except:
+      abort(422)
     
 ## Error Handling
 
@@ -205,7 +228,7 @@ def unprocessable(error):
     return jsonify({
                     "success": False, 
                     "error": 422,
-                    "message": "unprocessable"
+                    "message": "Unprocessable"
                     }), 422
 
 @app.errorhandler(404)
@@ -213,7 +236,7 @@ def not_found(error):
     return jsonify({
                     "success": False, 
                     "error": 404,
-                    "message": "resource not found"
+                    "message": "Resource not found"
                     }), 404
 
 @app.errorhandler(401)
