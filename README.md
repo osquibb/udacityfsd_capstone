@@ -32,10 +32,10 @@ python manage.py db upgrade
 * Contributions 
 
 ## Endpoints
-* GET /land_listings, /land_listings/*land_listing_id*, /funders, /funders/*funder_id*
-* POST /land_listings, /funders, /land_listings/*listing_id*/funds/*fund_id*
-* PATCH /funders/*funder_id*
-* DELETE /contributions/*contribution_id*
+* GET /land_listings, /land_listings/**land_listing_id**, /funders, /funders/**funder_id**
+* POST /land_listings, /funders, /land_listings/**listing_id**/funds/**fund_id**
+* PATCH /funders/**funder_id**
+* DELETE /contributions/**contribution_id**
 
 ## Roles
 #### Anonymous User
