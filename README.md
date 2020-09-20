@@ -1,5 +1,18 @@
 # udacityfsd_capstone
 
+To install dependencies, execute:
+```bash
+pip install -r requirements.txt
+```
+
+The following environment variables are required:
+```bash
+DATABASE_URL
+TEST_DATABASE_URL
+AUTH0_DOMAIN
+API_AUDIENCE
+```
+
 To run the server, execute:
 ```bash
 export FLASK_ENV=development
