@@ -4,10 +4,9 @@ from flask import Flask, request, jsonify, abort
 import json
 from flask_cors import CORS
 from models import LandListing, Funder, Fund, Contribution, setup_db, db_drop_and_create_all
+from auth import AuthError, requires_auth
 
-# TODO: add @requires_auth() wrappers
 # TODO: extend CORS - see trivia api
-# TODO: create common create_app() function
 
 # (un)comment below for testing
 # db_drop_and_create_all()
@@ -18,13 +17,15 @@ def create_app(test_config=None):
     CORS(app)
 
     ## ROUTES
-    @app.route('/')
+
+    @app.route('/health')
     def health_check():
         return jsonify({
                 'success': True,
                 'status': 'connected'
             }), 200
 
+    @requires_auth('get:listings')
     @app.route('/land_listings')
     def get_land_listings():
         formatted_land_listings = [ land_listing.format() for land_listing in LandListing.query.all() ]
@@ -37,6 +38,7 @@ def create_app(test_config=None):
                 'land_listings': formatted_land_listings
             }), 200
 
+    @requires_auth('get:listings')
     @app.route('/land_listings/<int:land_listing_id>')
     def get_land_listing_details(land_listing_id):
         land_listing = LandListing.query.get(land_listing_id)
@@ -58,6 +60,7 @@ def create_app(test_config=None):
         except:
             abort(422)
 
+    @requires_auth('post:listings')
     @app.route('/land_listings', methods=['POST'])
     def create_land_listing():
         try:
@@ -83,6 +86,7 @@ def create_app(test_config=None):
         except:
             abort(422)
 
+    @requires_auth('get:funders')
     @app.route('/funders')
     def get_funders():
         formatted_funders = [ funder.format() for funder in Funder.query.all() ]
@@ -95,6 +99,7 @@ def create_app(test_config=None):
                 'funders': formatted_funders
             }), 200
 
+    @requires_auth('post:funders')
     @app.route('/funders', methods=['POST'])
     def create_funder():
         try:
@@ -117,6 +122,7 @@ def create_app(test_config=None):
         except:
             abort(422)
 
+    @requires_auth('get:funders')
     @app.route('/funders/<int:funder_id>')
     def get_funder_details(funder_id):
         funder = Funder.query.get(funder_id)
@@ -137,6 +143,7 @@ def create_app(test_config=None):
         except:
             abort(422)
 
+    @requires_auth('patch:funders')
     @app.route('/funders/<int:funder_id>', methods=['PATCH'])
     def update_funder(funder_id):
         funder = Funder.query.get(funder_id)
@@ -169,6 +176,7 @@ def create_app(test_config=None):
         except:
             abort(422)
 
+    @requires_auth('post:contributions')
     @app.route('/land_listings/<int:land_listing_id>/funds/<int:fund_id>', methods=['POST'])
     def contribute_to_fund(land_listing_id, fund_id):
         body = request.get_json()
@@ -204,6 +212,7 @@ def create_app(test_config=None):
         except:
             abort(422)
 
+    @requires_auth('delete:contributions')
     @app.route('/contributions/<int:contribution_id>', methods=['DELETE'])
     def delete_contribution(contribution_id):
         contribution = Contribution.query.get(contribution_id)

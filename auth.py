@@ -1,12 +1,20 @@
 import json
+import os
 from flask import request, _request_ctx_stack
 from functools import wraps
 from jose import jwt
 from urllib.request import urlopen
+from dotenv import load_dotenv
 
-AUTH0_DOMAIN = 'dev-r2v8kom9.auth0.com'
+if os.environ['FLASK_ENV'] == 'development':
+    load_dotenv()
+
+AUTH0_DOMAIN = os.environ['AUTH0_DOMAIN']
 ALGORITHMS = ['RS256']
-API_AUDIENCE = 'coffeeShop'
+API_AUDIENCE = os.environ['API_AUDIENCE']
+
+# TODO: add AUTH0_DOMAIN and API_AUDIENCE to .env
+# TODO: extract local env variable loading into a function
 
 ## AuthError Exception
 '''

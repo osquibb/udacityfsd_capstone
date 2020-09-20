@@ -8,7 +8,7 @@ from app import create_app
 from dotenv import load_dotenv
 from models import LandListing, Funder, Fund, Contribution, setup_db, db_drop_and_create_all
 
-# TODO: create common setup_db() function
+# TODO: move test util functions to a different file
 
 def create_test_land_listing():
     land_listing = LandListing(
