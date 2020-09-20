@@ -25,8 +25,8 @@ def create_app(test_config=None):
                 'status': 'connected'
             }), 200
 
-    @requires_auth('get:listings')
     @app.route('/land_listings')
+    @requires_auth('get:listings')
     def get_land_listings():
         formatted_land_listings = [ land_listing.format() for land_listing in LandListing.query.all() ]
 
@@ -38,8 +38,8 @@ def create_app(test_config=None):
                 'land_listings': formatted_land_listings
             }), 200
 
-    @requires_auth('get:listings')
     @app.route('/land_listings/<int:land_listing_id>')
+    @requires_auth('get:listings')
     def get_land_listing_details(land_listing_id):
         land_listing = LandListing.query.get(land_listing_id)
 
@@ -60,8 +60,8 @@ def create_app(test_config=None):
         except:
             abort(422)
 
-    @requires_auth('post:listings')
     @app.route('/land_listings', methods=['POST'])
+    @requires_auth('post:listings')
     def create_land_listing():
         try:
             body = request.get_json()
@@ -86,8 +86,8 @@ def create_app(test_config=None):
         except:
             abort(422)
 
-    @requires_auth('get:funders')
     @app.route('/funders')
+    @requires_auth('get:funders')
     def get_funders():
         formatted_funders = [ funder.format() for funder in Funder.query.all() ]
 
@@ -99,8 +99,8 @@ def create_app(test_config=None):
                 'funders': formatted_funders
             }), 200
 
-    @requires_auth('post:funders')
     @app.route('/funders', methods=['POST'])
+    @requires_auth('post:funders')
     def create_funder():
         try:
             body = request.get_json()
@@ -122,8 +122,8 @@ def create_app(test_config=None):
         except:
             abort(422)
 
-    @requires_auth('get:funders')
     @app.route('/funders/<int:funder_id>')
+    @requires_auth('get:funders')
     def get_funder_details(funder_id):
         funder = Funder.query.get(funder_id)
         if funder is None:
@@ -143,8 +143,8 @@ def create_app(test_config=None):
         except:
             abort(422)
 
-    @requires_auth('patch:funders')
     @app.route('/funders/<int:funder_id>', methods=['PATCH'])
+    @requires_auth('patch:funders')
     def update_funder(funder_id):
         funder = Funder.query.get(funder_id)
 
@@ -176,8 +176,8 @@ def create_app(test_config=None):
         except:
             abort(422)
 
-    @requires_auth('post:contributions')
     @app.route('/land_listings/<int:land_listing_id>/funds/<int:fund_id>', methods=['POST'])
+    @requires_auth('post:contributions')
     def contribute_to_fund(land_listing_id, fund_id):
         body = request.get_json()
         amount = body.get('amount', None)
@@ -212,8 +212,8 @@ def create_app(test_config=None):
         except:
             abort(422)
 
-    @requires_auth('delete:contributions')
     @app.route('/contributions/<int:contribution_id>', methods=['DELETE'])
+    @requires_auth('delete:contributions')
     def delete_contribution(contribution_id):
         contribution = Contribution.query.get(contribution_id)
 
