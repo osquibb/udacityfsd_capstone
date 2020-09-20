@@ -71,7 +71,7 @@ python manage.py db upgrade
 * Can add a contribution
 
 #### Listing Manager
-* Can Add, modify or delete land listings
+* Can Add, modify or delete land listings and view funders
 
 #### Admin
-* Can Add, modifiy or delete land listings, funders and contributions
+* Can do all of the above & delete contributions
