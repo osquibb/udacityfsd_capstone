@@ -13,9 +13,6 @@ AUTH0_DOMAIN = os.environ['AUTH0_DOMAIN']
 ALGORITHMS = ['RS256']
 API_AUDIENCE = os.environ['API_AUDIENCE']
 
-# TODO: add AUTH0_DOMAIN and API_AUDIENCE to .env
-# TODO: extract local env variable loading into a function
-
 ## AuthError Exception
 '''
 AuthError Exception

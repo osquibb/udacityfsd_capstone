@@ -50,10 +50,9 @@ python manage.py db upgrade
 * /contributions/**{contribution_id}**
 
 ## Roles
-#### Anonymous User
-* Can view land listings and funds
 
 #### Funder
+* Can view land listings and funds
 * Can view land listings, funds and funders
 * Can modify own funder data
 * Can add a contribution
