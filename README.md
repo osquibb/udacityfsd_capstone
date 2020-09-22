@@ -58,7 +58,7 @@ https://dev-r2v8kom9.auth0.com/authorize?audience=polyop&response_type=token&cli
 
 **POST**
 * /land_listings
-- Example request body:
+*Example request body:*
 ```json
 {
     "title": "land listing title",
@@ -72,7 +72,7 @@ https://dev-r2v8kom9.auth0.com/authorize?audience=polyop&response_type=token&cli
 }
 ```
 * /funders
-- Example request body:
+*Example request body:*
 ```json
 {
     "first_name": "John",
@@ -84,7 +84,7 @@ https://dev-r2v8kom9.auth0.com/authorize?audience=polyop&response_type=token&cli
 }
 ```
 * /land_listings/**{land_listing_id}**/funds/**{fund_id}**
-- Example request body:
+*Example request body:*
 ```json
 {
     "funder_id": 1,
@@ -94,7 +94,7 @@ https://dev-r2v8kom9.auth0.com/authorize?audience=polyop&response_type=token&cli
 
 **PATCH**
 * /funders/**{funder_id}**
-- Example request body:
+*Example request body:*
 ```json
 {
     "first_name": "John",
