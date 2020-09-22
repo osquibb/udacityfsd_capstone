@@ -58,11 +58,53 @@ https://dev-r2v8kom9.auth0.com/authorize?audience=polyop&response_type=token&cli
 
 **POST**
 * /land_listings
+- Example request body:
+```json
+{
+    "title": "land listing title",
+    "address_1": "",
+    "address_2": "",
+    "city": "New York",
+    "state": "NY",
+    "zipcode": 10101,
+    "sale_price": 5000,
+    "listed_date": "01/01/2020"
+}
+```
 * /funders
+- Example request body:
+```json
+{
+    "first_name": "John",
+    "last_name": "Smith",
+    "age": 20,
+    "gender": "Male",
+    "phone": 1021231212,
+    "email": "john@test.com"
+}
+```
 * /land_listings/**{land_listing_id}**/funds/**{fund_id}**
+- Example request body:
+```json
+{
+    "funder_id": 1,
+    "amount": 10.50
+}
+```
 
 **PATCH**
 * /funders/**{funder_id}**
+- Example request body:
+```json
+{
+    "first_name": "John",
+    "last_name": "Smith",
+    "age": 20,
+    "gender": "Male",
+    "phone": 1021231212,
+    "email": "john@test.com"
+}
+```
 
 **DELETE**
 * /contributions/**{contribution_id}**
