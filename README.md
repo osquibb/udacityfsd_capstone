@@ -34,6 +34,11 @@ python manage.py db migrate
 python manage.py db upgrade
 ```
 
+**To login**:
+https://dev-r2v8kom9.auth0.com/authorize?audience=polyop&response_type=token&client_id=ddwa7LxBL2pxmRMyEk53tF7SI4JrN0N6&redirect_uri=https://polyopsony.herokuapp.com/health
+
+**Postman Collections (RBAC Tests) are available in /postman_rbac_tests**
+
 ## Overview
 **Polyopsony** models a company that is responsible for listing land availabe for sale and managing crowdsourced funding in order to purchase and convert the land into nature preserves.
 
@@ -62,16 +67,25 @@ python manage.py db upgrade
 **DELETE**
 * /contributions/**{contribution_id}**
 
-## Roles
+## Roles & Permissions
 
 #### Funder
-* Can view land listings and funds
-* Can view land listings, funds and funders
-* Can modify own funder data
-* Can add a contribution
+* get:funders
+* post:funders
+* get:listings
+* patch:funders
+* post:contributions	
 
 #### Listing Manager
-* Can Add, modify or delete land listings and view funders
+* get:funders	
+* get:listings
+* post:listings
 
 #### Admin
-* Can do all of the above & delete contributions
+* get:funders
+* post:funders
+* patch:funders
+* get:listings
+* post:listings
+* post:contributions
+* delete:contributions

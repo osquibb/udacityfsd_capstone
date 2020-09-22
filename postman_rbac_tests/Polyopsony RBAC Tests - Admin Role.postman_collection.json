@@ -1,0 +1,180 @@
+{
+	"info": {
+		"_postman_id": "1791a8cc-3ec8-4600-a4cf-52e4b2a25e20",
+		"name": "Polyopsony RBAC Tests - Admin Role",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "get land_listings",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCIsImtpZCI6Ik1rUkJOelF6UlRrelJFRXpOREUyTlRFd056QXpNREUzUlVSQlFUYzJSRGcyTmtZM1FUUXhOQSJ9.eyJpc3MiOiJodHRwczovL2Rldi1yMnY4a29tOS5hdXRoMC5jb20vIiwic3ViIjoiZ29vZ2xlLW9hdXRoMnwxMTMxOTc2NDk2MzE2NDYxNTQ0MzAiLCJhdWQiOlsicG9seW9wIiwiaHR0cHM6Ly9kZXYtcjJ2OGtvbTkuYXV0aDAuY29tL3VzZXJpbmZvIl0sImlhdCI6MTYwMDgxMjYxMSwiZXhwIjoxNjAwODk5MDExLCJhenAiOiJkZHdhN0x4QkwycHhtUk15RWs1M3RGN1NJNEpyTjBONiIsInNjb3BlIjoib3BlbmlkIHByb2ZpbGUgZW1haWwiLCJwZXJtaXNzaW9ucyI6WyJkZWxldGU6Y29udHJpYnV0aW9ucyIsImdldDpmdW5kZXJzIiwiZ2V0Omxpc3RpbmdzIiwicGF0Y2g6ZnVuZGVycyIsInBvc3Q6Y29udHJpYnV0aW9ucyIsInBvc3Q6ZnVuZGVycyIsInBvc3Q6bGlzdGluZ3MiXX0.AEc2d3LhbsM3tN8ogoL62qLS5i63ci4N16f6S8Yl6MZrV0-hhPdMy0aqEVzMHjzeHQxuvDahfdvyyJKRT7SxtqU6cJGCJMH_sFpyN0sqZjDk8aev3DNjHJ839czUrSbbGlDZFTB4CqdGNQXABckUTuQeaeCERqSZvJZZcGoco-rFsYgjfpHXwCfrgEqPhAbcIsCAjW1o75RPF8qnrlySxDg5K-5iymyBZZNpGR37rwf96kEPHDK79GSlBCaoAf8AApvqKyhJgy15fVhHc5_csq0h4Rzd7UTQdwsrLp-jnwgh5Ps61y9SygVQBFWo3ysEEvjozOpq71ldYwDIUWu1bg",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "https://polyopsony.herokuapp.com/land_listings",
+					"protocol": "https",
+					"host": [
+						"polyopsony",
+						"herokuapp",
+						"com"
+					],
+					"path": [
+						"land_listings"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "post land_listings",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCIsImtpZCI6Ik1rUkJOelF6UlRrelJFRXpOREUyTlRFd056QXpNREUzUlVSQlFUYzJSRGcyTmtZM1FUUXhOQSJ9.eyJpc3MiOiJodHRwczovL2Rldi1yMnY4a29tOS5hdXRoMC5jb20vIiwic3ViIjoiZ29vZ2xlLW9hdXRoMnwxMTMxOTc2NDk2MzE2NDYxNTQ0MzAiLCJhdWQiOlsicG9seW9wIiwiaHR0cHM6Ly9kZXYtcjJ2OGtvbTkuYXV0aDAuY29tL3VzZXJpbmZvIl0sImlhdCI6MTYwMDgxMjYxMSwiZXhwIjoxNjAwODk5MDExLCJhenAiOiJkZHdhN0x4QkwycHhtUk15RWs1M3RGN1NJNEpyTjBONiIsInNjb3BlIjoib3BlbmlkIHByb2ZpbGUgZW1haWwiLCJwZXJtaXNzaW9ucyI6WyJkZWxldGU6Y29udHJpYnV0aW9ucyIsImdldDpmdW5kZXJzIiwiZ2V0Omxpc3RpbmdzIiwicGF0Y2g6ZnVuZGVycyIsInBvc3Q6Y29udHJpYnV0aW9ucyIsInBvc3Q6ZnVuZGVycyIsInBvc3Q6bGlzdGluZ3MiXX0.AEc2d3LhbsM3tN8ogoL62qLS5i63ci4N16f6S8Yl6MZrV0-hhPdMy0aqEVzMHjzeHQxuvDahfdvyyJKRT7SxtqU6cJGCJMH_sFpyN0sqZjDk8aev3DNjHJ839czUrSbbGlDZFTB4CqdGNQXABckUTuQeaeCERqSZvJZZcGoco-rFsYgjfpHXwCfrgEqPhAbcIsCAjW1o75RPF8qnrlySxDg5K-5iymyBZZNpGR37rwf96kEPHDK79GSlBCaoAf8AApvqKyhJgy15fVhHc5_csq0h4Rzd7UTQdwsrLp-jnwgh5Ps61y9SygVQBFWo3ysEEvjozOpq71ldYwDIUWu1bg",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"title\": \"Fake Lot\",\n    \"address_1\": \"123 Green Street\",\n    \"city\": \"New York City\",\n    \"state\": \"NY\",\n    \"zipcode\": \"10101\",\n    \"sale_price\": 12000,\n    \"listed_date\": \"04/02/2020\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "https://polyopsony.herokuapp.com/land_listings",
+					"protocol": "https",
+					"host": [
+						"polyopsony",
+						"herokuapp",
+						"com"
+					],
+					"path": [
+						"land_listings"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "get funders",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCIsImtpZCI6Ik1rUkJOelF6UlRrelJFRXpOREUyTlRFd056QXpNREUzUlVSQlFUYzJSRGcyTmtZM1FUUXhOQSJ9.eyJpc3MiOiJodHRwczovL2Rldi1yMnY4a29tOS5hdXRoMC5jb20vIiwic3ViIjoiZ29vZ2xlLW9hdXRoMnwxMTMxOTc2NDk2MzE2NDYxNTQ0MzAiLCJhdWQiOlsicG9seW9wIiwiaHR0cHM6Ly9kZXYtcjJ2OGtvbTkuYXV0aDAuY29tL3VzZXJpbmZvIl0sImlhdCI6MTYwMDgxMjYxMSwiZXhwIjoxNjAwODk5MDExLCJhenAiOiJkZHdhN0x4QkwycHhtUk15RWs1M3RGN1NJNEpyTjBONiIsInNjb3BlIjoib3BlbmlkIHByb2ZpbGUgZW1haWwiLCJwZXJtaXNzaW9ucyI6WyJkZWxldGU6Y29udHJpYnV0aW9ucyIsImdldDpmdW5kZXJzIiwiZ2V0Omxpc3RpbmdzIiwicGF0Y2g6ZnVuZGVycyIsInBvc3Q6Y29udHJpYnV0aW9ucyIsInBvc3Q6ZnVuZGVycyIsInBvc3Q6bGlzdGluZ3MiXX0.AEc2d3LhbsM3tN8ogoL62qLS5i63ci4N16f6S8Yl6MZrV0-hhPdMy0aqEVzMHjzeHQxuvDahfdvyyJKRT7SxtqU6cJGCJMH_sFpyN0sqZjDk8aev3DNjHJ839czUrSbbGlDZFTB4CqdGNQXABckUTuQeaeCERqSZvJZZcGoco-rFsYgjfpHXwCfrgEqPhAbcIsCAjW1o75RPF8qnrlySxDg5K-5iymyBZZNpGR37rwf96kEPHDK79GSlBCaoAf8AApvqKyhJgy15fVhHc5_csq0h4Rzd7UTQdwsrLp-jnwgh5Ps61y9SygVQBFWo3ysEEvjozOpq71ldYwDIUWu1bg",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "https://polyopsony.herokuapp.com/funders",
+					"protocol": "https",
+					"host": [
+						"polyopsony",
+						"herokuapp",
+						"com"
+					],
+					"path": [
+						"funders"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "post funders",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCIsImtpZCI6Ik1rUkJOelF6UlRrelJFRXpOREUyTlRFd056QXpNREUzUlVSQlFUYzJSRGcyTmtZM1FUUXhOQSJ9.eyJpc3MiOiJodHRwczovL2Rldi1yMnY4a29tOS5hdXRoMC5jb20vIiwic3ViIjoiZ29vZ2xlLW9hdXRoMnwxMTMxOTc2NDk2MzE2NDYxNTQ0MzAiLCJhdWQiOlsicG9seW9wIiwiaHR0cHM6Ly9kZXYtcjJ2OGtvbTkuYXV0aDAuY29tL3VzZXJpbmZvIl0sImlhdCI6MTYwMDgxMjYxMSwiZXhwIjoxNjAwODk5MDExLCJhenAiOiJkZHdhN0x4QkwycHhtUk15RWs1M3RGN1NJNEpyTjBONiIsInNjb3BlIjoib3BlbmlkIHByb2ZpbGUgZW1haWwiLCJwZXJtaXNzaW9ucyI6WyJkZWxldGU6Y29udHJpYnV0aW9ucyIsImdldDpmdW5kZXJzIiwiZ2V0Omxpc3RpbmdzIiwicGF0Y2g6ZnVuZGVycyIsInBvc3Q6Y29udHJpYnV0aW9ucyIsInBvc3Q6ZnVuZGVycyIsInBvc3Q6bGlzdGluZ3MiXX0.AEc2d3LhbsM3tN8ogoL62qLS5i63ci4N16f6S8Yl6MZrV0-hhPdMy0aqEVzMHjzeHQxuvDahfdvyyJKRT7SxtqU6cJGCJMH_sFpyN0sqZjDk8aev3DNjHJ839czUrSbbGlDZFTB4CqdGNQXABckUTuQeaeCERqSZvJZZcGoco-rFsYgjfpHXwCfrgEqPhAbcIsCAjW1o75RPF8qnrlySxDg5K-5iymyBZZNpGR37rwf96kEPHDK79GSlBCaoAf8AApvqKyhJgy15fVhHc5_csq0h4Rzd7UTQdwsrLp-jnwgh5Ps61y9SygVQBFWo3ysEEvjozOpq71ldYwDIUWu1bg",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{   \"age\": 20,\n    \"email\": \"john@test.com\",\n    \"first_name\": \"John\",\n    \"gender\": \"Male\",\n    \"last_name\": \"Smith\",\n    \"phone\": 1233456542\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "https://polyopsony.herokuapp.com/funders",
+					"protocol": "https",
+					"host": [
+						"polyopsony",
+						"herokuapp",
+						"com"
+					],
+					"path": [
+						"funders"
+					]
+				}
+			},
+			"response": []
+		}
+	],
+	"auth": {
+		"type": "bearer",
+		"bearer": [
+			{
+				"key": "token",
+				"value": "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCIsImtpZCI6Ik1rUkJOelF6UlRrelJFRXpOREUyTlRFd056QXpNREUzUlVSQlFUYzJSRGcyTmtZM1FUUXhOQSJ9.eyJpc3MiOiJodHRwczovL2Rldi1yMnY4a29tOS5hdXRoMC5jb20vIiwic3ViIjoiZ29vZ2xlLW9hdXRoMnwxMTMxOTc2NDk2MzE2NDYxNTQ0MzAiLCJhdWQiOlsicG9seW9wIiwiaHR0cHM6Ly9kZXYtcjJ2OGtvbTkuYXV0aDAuY29tL3VzZXJpbmZvIl0sImlhdCI6MTYwMDgxMjYxMSwiZXhwIjoxNjAwODk5MDExLCJhenAiOiJkZHdhN0x4QkwycHhtUk15RWs1M3RGN1NJNEpyTjBONiIsInNjb3BlIjoib3BlbmlkIHByb2ZpbGUgZW1haWwiLCJwZXJtaXNzaW9ucyI6WyJkZWxldGU6Y29udHJpYnV0aW9ucyIsImdldDpmdW5kZXJzIiwiZ2V0Omxpc3RpbmdzIiwicGF0Y2g6ZnVuZGVycyIsInBvc3Q6Y29udHJpYnV0aW9ucyIsInBvc3Q6ZnVuZGVycyIsInBvc3Q6bGlzdGluZ3MiXX0.AEc2d3LhbsM3tN8ogoL62qLS5i63ci4N16f6S8Yl6MZrV0-hhPdMy0aqEVzMHjzeHQxuvDahfdvyyJKRT7SxtqU6cJGCJMH_sFpyN0sqZjDk8aev3DNjHJ839czUrSbbGlDZFTB4CqdGNQXABckUTuQeaeCERqSZvJZZcGoco-rFsYgjfpHXwCfrgEqPhAbcIsCAjW1o75RPF8qnrlySxDg5K-5iymyBZZNpGR37rwf96kEPHDK79GSlBCaoAf8AApvqKyhJgy15fVhHc5_csq0h4Rzd7UTQdwsrLp-jnwgh5Ps61y9SygVQBFWo3ysEEvjozOpq71ldYwDIUWu1bg",
+				"type": "string"
+			}
+		]
+	},
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"id": "c5836890-f4a6-4ba9-b219-eea9ced0c2c3",
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"id": "195450ae-1a44-49fb-b909-f1b68001127f",
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"protocolProfileBehavior": {}
+}
