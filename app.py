@@ -71,7 +71,7 @@ def create_app(test_config=None):
                 'total_contributions': str(total_contributions)
             }), 200
 
-        except BaseException:
+        except Exception:
             abort(422)
 
     @app.route('/land_listings', methods=['POST'])
@@ -105,7 +105,7 @@ def create_app(test_config=None):
                 'initial_fund_id': new_land_listing.funds[0].id
             }), 200
 
-        except BaseException:
+        except Exception:
             abort(422)
 
     @app.route('/funders')
@@ -147,7 +147,7 @@ def create_app(test_config=None):
                 'funder_id': new_funder.id
             }), 200
 
-        except BaseException:
+        except Exception:
             abort(422)
 
     @app.route('/funders/<int:funder_id>')
@@ -170,7 +170,7 @@ def create_app(test_config=None):
                 'total_contributions': str(total_contributions)
             }), 200
 
-        except BaseException:
+        except Exception:
             abort(422)
 
     @app.route('/funders/<int:funder_id>', methods=['PATCH'])
@@ -203,7 +203,7 @@ def create_app(test_config=None):
                 'funder': funder.format()
             }), 200
 
-        except BaseException:
+        except Exception:
             abort(422)
 
     @app.route('/land_listings/<int:land_listing_id>/funds/<int:fund_id>',
@@ -216,7 +216,7 @@ def create_app(test_config=None):
 
         try:
             amount = float(amount)
-        except BaseException:
+        except Exception:
             abort(422)
 
         land_listing = LandListing.query.get(land_listing_id)
@@ -245,7 +245,7 @@ def create_app(test_config=None):
                 'contribution': new_contribution.format(),
             }), 200
 
-        except BaseException:
+        except Exception:
             abort(422)
 
     @app.route('/contributions/<int:contribution_id>', methods=['DELETE'])
@@ -264,7 +264,7 @@ def create_app(test_config=None):
                 'deleted_contribution_id': contribution_id
             }), 200
 
-        except BaseException:
+        except Exception:
             abort(422)
 
     # Error Handling
