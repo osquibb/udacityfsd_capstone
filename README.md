@@ -1,20 +1,27 @@
 # udacityfsd_capstone
 
-To install dependencies, execute:
+## Overview
+**Polyopsony** models a company that is responsible for listing land availabe for sale and managing crowdsourced funding in order to purchase and convert the land into nature preserves.  Funders will be able to browse listings and contribute to funds associated with each.  API endpoints provide information such as all listings, contributions and total contributions associcated with each listing and contributions associated with each funder.
+
+To install dependencies, in the project directory, execute:
 ```bash
 pip install -r requirements.txt
 ```
 
-The following environment variables are required:
-```bash
-DATABASE_URL
-TEST_DATABASE_URL
-AUTH0_DOMAIN
-API_AUDIENCE
+This project requires postgres.  To install postgres, with homebrew installed:
+```
+brew install postgres
+```
+
+This project requires two postgres databases running locally:
+```
+createdb polyop
+createdb polyop_test
 ```
 
 To run the server, execute:
 ```bash
+source setup.sh
 export FLASK_ENV=development
 export FLASK_APP=app.py
 flask run --reload
@@ -22,25 +29,27 @@ flask run --reload
 
 To run tests, execute:
 ```bash
+source setup.sh
 export FLASK_ENV=development
 python test.py
 ```
 
 To run initial db migration, execute:
 ```bash
+source setup.sh
 export FLASK_ENV=development
 python manage.py db init
 python manage.py db migrate
 python manage.py db upgrade
 ```
 
-**To login**:
+**Herkou URL**
+https://polyopsony.herokuapp.com/
+
+**To login**
 https://dev-r2v8kom9.auth0.com/authorize?audience=polyop&response_type=token&client_id=ddwa7LxBL2pxmRMyEk53tF7SI4JrN0N6&redirect_uri=https://polyopsony.herokuapp.com/health
 
 **Postman Collections (RBAC Tests) are available in /postman_rbac_tests**
-
-## Overview
-**Polyopsony** models a company that is responsible for listing land availabe for sale and managing crowdsourced funding in order to purchase and convert the land into nature preserves.
 
 ## Models
 

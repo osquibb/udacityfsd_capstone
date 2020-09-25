@@ -3,10 +3,6 @@ from sqlalchemy import Column, Integer, String, Numeric, Date, ForeignKey
 from sqlalchemy.orm import relationship
 from flask_sqlalchemy import SQLAlchemy
 import json
-from dotenv import load_dotenv
-
-if os.environ['FLASK_ENV'] == 'development':
-    load_dotenv()
 
 database_path = os.environ['DATABASE_URL']
 
@@ -16,6 +12,8 @@ db = SQLAlchemy()
 setup_db(app)
     binds a flask application and a SQLAlchemy service
 '''
+
+
 def setup_db(app, database_path=database_path):
     app.config["SQLALCHEMY_DATABASE_URI"] = database_path
     app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
@@ -23,9 +21,11 @@ def setup_db(app, database_path=database_path):
     db.init_app(app)
     db.create_all()
 
+
 def db_drop_and_create_all():
     db.drop_all()
     db.create_all()
+
 
 class LandListing(db.Model):
     __tablename__ = 'land_listings'
@@ -45,7 +45,8 @@ class LandListing(db.Model):
 
     def insert(self):
         db.session.add(self)
-        funds = Fund.query.filter(Fund.land_listing_id == self.id).one_or_none()
+        funds = Fund.query.filter(
+            Fund.land_listing_id == self.id).one_or_none()
 
         if funds is None:
             new_fund = Fund(land_listing_id=self.id)
@@ -79,6 +80,7 @@ class LandListing(db.Model):
             'sale_price': str(self.sale_price),
             'listed_date': self.listed_date
         }
+
 
 class Funder(db.Model):
     __tablename__ = 'funders'
@@ -119,6 +121,7 @@ class Funder(db.Model):
             'email': self.email
         }
 
+
 class Fund(db.Model):
     __tablename__ = 'funds'
 
@@ -126,7 +129,8 @@ class Fund(db.Model):
     id = Column('fund_id', Integer, primary_key=True)
 
     # FK
-    land_listing_id = Column(Integer, ForeignKey('land_listings.land_listing_id'), nullable=False)
+    land_listing_id = Column(Integer, ForeignKey(
+        'land_listings.land_listing_id'), nullable=False)
 
     # non-key fields
     transaction_fee = Column(Numeric, default=50.00)
@@ -152,7 +156,8 @@ class Fund(db.Model):
             'land_listing_id': self.land_listing_id,
             'transaction_fee': str(self.transaction_fee)
         }
-    
+
+
 class Contribution(db.Model):
     # associative table
     __tablename__ = 'contributions'
@@ -162,7 +167,8 @@ class Contribution(db.Model):
 
     # FKs
     funder_id = Column(Integer, ForeignKey('funders.funder_id'))
-    land_listing_id = Column(Integer, ForeignKey('land_listings.land_listing_id'))
+    land_listing_id = Column(
+        Integer, ForeignKey('land_listings.land_listing_id'))
     fund_id = Column(Integer, ForeignKey('funds.fund_id'))
 
     # non-key fields

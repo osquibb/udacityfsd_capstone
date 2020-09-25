@@ -1,9 +1,10 @@
 import os
 import datetime
-from flask import Flask, request, jsonify, abort
+from flask import Flask, request, jsonify, abort, redirect, url_for
 import json
 from flask_cors import CORS
-from models import LandListing, Funder, Fund, Contribution, setup_db, db_drop_and_create_all
+from models import LandListing, Funder, Fund, Contribution, \
+    setup_db, db_drop_and_create_all
 from auth import AuthError, requires_auth
 
 # TODO: extend CORS - see trivia api
@@ -11,32 +12,38 @@ from auth import AuthError, requires_auth
 # (un)comment below for testing
 # db_drop_and_create_all()
 
+
 def create_app(test_config=None):
     app = Flask(__name__)
     setup_db(app)
     CORS(app)
 
-    ## ROUTES
+    # ROUTES
+
+    @app.route('/')
+    def index():
+        return redirect(url_for('health_check'))
 
     @app.route('/health')
     def health_check():
         return jsonify({
-                'success': True,
-                'status': 'connected'
-            }), 200
+            'success': True,
+            'status': 'connected'
+        }), 200
 
     @app.route('/land_listings')
     @requires_auth('get:listings')
     def get_land_listings():
-        formatted_land_listings = [ land_listing.format() for land_listing in LandListing.query.all() ]
+        formatted_land_listings = [land_listing.format()
+                                   for land_listing in LandListing.query.all()]
 
         if len(formatted_land_listings) == 0:
             abort(404)
 
         return jsonify({
-                'success': True,
-                'land_listings': formatted_land_listings
-            }), 200
+            'success': True,
+            'land_listings': formatted_land_listings
+        }), 200
 
     @app.route('/land_listings/<int:land_listing_id>')
     @requires_auth('get:listings')
@@ -47,17 +54,24 @@ def create_app(test_config=None):
             abort(404)
 
         try:
-            formatted_contributions = [ contribution.format() for contribution in land_listing.contributions  ]
-            total_contributions = sum([ contribution.amount for contribution in land_listing.contributions ])
+            formatted_contributions = [
+                contribution.format()
+                for contribution in land_listing.contributions
+            ]
+            total_contributions = sum(
+                [
+                    contribution.amount
+                    for contribution in land_listing.contributions
+                ])
 
             return jsonify({
-                    'success': True,
-                    'land_listing': land_listing.format(),
-                    'contributions': formatted_contributions,
-                    'total_contributions': str(total_contributions)
-                }), 200
+                'success': True,
+                'land_listing': land_listing.format(),
+                'contributions': formatted_contributions,
+                'total_contributions': str(total_contributions)
+            }), 200
 
-        except:
+        except BaseException:
             abort(422)
 
     @app.route('/land_listings', methods=['POST'])
@@ -74,7 +88,15 @@ def create_app(test_config=None):
             sale_price = body.get('sale_price', None)
             listed_date = body.get('listed_date', None)
 
-            new_land_listing = LandListing(title=title, address_1=address_1, address_2=address_2, city=city, state=state, zipcode=zipcode, sale_price=sale_price, listed_date=listed_date)
+            new_land_listing = LandListing(
+                title=title,
+                address_1=address_1,
+                address_2=address_2,
+                city=city,
+                state=state,
+                zipcode=zipcode,
+                sale_price=sale_price,
+                listed_date=listed_date)
             new_land_listing.insert()
 
             return jsonify({
@@ -83,21 +105,21 @@ def create_app(test_config=None):
                 'initial_fund_id': new_land_listing.funds[0].id
             }), 200
 
-        except:
+        except BaseException:
             abort(422)
 
     @app.route('/funders')
     @requires_auth('get:funders')
     def get_funders():
-        formatted_funders = [ funder.format() for funder in Funder.query.all() ]
+        formatted_funders = [funder.format() for funder in Funder.query.all()]
 
         if len(formatted_funders) == 0:
             abort(404)
 
         return jsonify({
-                'success': True,
-                'funders': formatted_funders
-            }), 200
+            'success': True,
+            'funders': formatted_funders
+        }), 200
 
     @app.route('/funders', methods=['POST'])
     @requires_auth('post:funders')
@@ -111,7 +133,13 @@ def create_app(test_config=None):
             phone = body.get('phone', None)
             email = body.get('email', None)
 
-            new_funder = Funder(first_name=first_name, last_name=last_name, age=age, gender=gender, phone=phone, email=email)
+            new_funder = Funder(
+                first_name=first_name,
+                last_name=last_name,
+                age=age,
+                gender=gender,
+                phone=phone,
+                email=email)
             new_funder.insert()
 
             return jsonify({
@@ -119,7 +147,7 @@ def create_app(test_config=None):
                 'funder_id': new_funder.id
             }), 200
 
-        except:
+        except BaseException:
             abort(422)
 
     @app.route('/funders/<int:funder_id>')
@@ -129,10 +157,12 @@ def create_app(test_config=None):
         if funder is None:
             abort(404)
 
-        try:  
-            formatted_contributions = [ contribution.format() for contribution in funder.contributions  ]
-            total_contributions = sum([ contribution.amount for contribution in funder.contributions ])
-            
+        try:
+            formatted_contributions = [
+                contribution.format() for contribution in funder.contributions]
+            total_contributions = sum(
+                [contribution.amount for contribution in funder.contributions])
+
             return jsonify({
                 'success': True,
                 'funder': funder.format(),
@@ -140,7 +170,7 @@ def create_app(test_config=None):
                 'total_contributions': str(total_contributions)
             }), 200
 
-        except:
+        except BaseException:
             abort(422)
 
     @app.route('/funders/<int:funder_id>', methods=['PATCH'])
@@ -153,7 +183,7 @@ def create_app(test_config=None):
 
         try:
             body = request.get_json()
-            updates = { 
+            updates = {
                 'first_name': body.get('first_name', None),
                 'last_name': body.get('last_name', None),
                 'age': body.get('age', None),
@@ -169,14 +199,15 @@ def create_app(test_config=None):
             funder.update()
 
             return jsonify({
-                    'success': True,
-                    'funder': funder.format()
-                }), 200
+                'success': True,
+                'funder': funder.format()
+            }), 200
 
-        except:
+        except BaseException:
             abort(422)
 
-    @app.route('/land_listings/<int:land_listing_id>/funds/<int:fund_id>', methods=['POST'])
+    @app.route('/land_listings/<int:land_listing_id>/funds/<int:fund_id>',
+               methods=['POST'])
     @requires_auth('post:contributions')
     def contribute_to_fund(land_listing_id, fund_id):
         body = request.get_json()
@@ -185,7 +216,7 @@ def create_app(test_config=None):
 
         try:
             amount = float(amount)
-        except:
+        except BaseException:
             abort(422)
 
         land_listing = LandListing.query.get(land_listing_id)
@@ -195,13 +226,18 @@ def create_app(test_config=None):
         if (land_listing is None) or (fund is None) or (funder is None):
             abort(404)
 
-        land_listing_fund_ids = [ fund.id for fund in land_listing.funds ]
+        land_listing_fund_ids = [fund.id for fund in land_listing.funds]
 
         if fund_id not in land_listing_fund_ids:
             abort(422)
 
         try:
-            new_contribution = Contribution(funder_id=funder.id, land_listing_id=land_listing.id, fund_id=fund.id, date=datetime.date.today(), amount=amount)
+            new_contribution = Contribution(
+                funder_id=funder.id,
+                land_listing_id=land_listing.id,
+                fund_id=fund.id,
+                date=datetime.date.today(),
+                amount=amount)
             new_contribution.insert()
 
             return jsonify({
@@ -209,7 +245,7 @@ def create_app(test_config=None):
                 'contribution': new_contribution.format(),
             }), 200
 
-        except:
+        except BaseException:
             abort(422)
 
     @app.route('/contributions/<int:contribution_id>', methods=['DELETE'])
@@ -219,7 +255,7 @@ def create_app(test_config=None):
 
         if contribution is None:
             abort(404)
-        
+
         try:
             contribution.delete()
 
@@ -228,36 +264,45 @@ def create_app(test_config=None):
                 'deleted_contribution_id': contribution_id
             }), 200
 
-        except:
+        except BaseException:
             abort(422)
-        
-    ## Error Handling
+
+    # Error Handling
 
     @app.errorhandler(422)
     def unprocessable(error):
         return jsonify({
-                        "success": False, 
-                        "error": 422,
-                        "message": "Unprocessable"
-                        }), 422
+            "success": False,
+            "error": 422,
+            "message": "Unprocessable"
+        }), 422
 
     @app.errorhandler(404)
     def not_found(error):
         return jsonify({
-                        "success": False, 
-                        "error": 404,
-                        "message": "Resource not found"
-                        }), 404
+            "success": False,
+            "error": 404,
+            "message": "Resource not found"
+        }), 404
 
-    @app.errorhandler(401)
-    def unauthorized(error):
+    @app.errorhandler(500)
+    def internal_server_error(error):
         return jsonify({
             "success": False,
-            "error": 401,
-            "message": 'Unathorized'
-        }), 401
-    
+            "error": 500,
+            "message": "Internal Server Error"
+        }), 500
+
+    @app.errorhandler(AuthError)
+    def unprocessable(error):
+        return jsonify({
+            "success": False,
+            "error": error.status_code,
+            "message": error.error['description']
+        }), error.status_code
+
     return app
+
 
 app = create_app()
 

@@ -5,7 +5,9 @@ from utils.testUtils import *
 from flask_sqlalchemy import SQLAlchemy
 from flask import Flask
 from app import create_app
-from models import LandListing, Funder, Fund, Contribution, setup_db, db_drop_and_create_all
+from models import LandListing, Funder, Fund, Contribution, \
+    setup_db, db_drop_and_create_all
+
 
 class PolyopsonyTest(unittest.TestCase):
 
@@ -14,14 +16,14 @@ class PolyopsonyTest(unittest.TestCase):
         self.client = self.app.test_client
         self.database_path = os.environ['TEST_DATABASE_URL']
         setup_db(self.app, self.database_path)
-        
+
         # binds the app to the current context
         with self.app.app_context():
             self.db = SQLAlchemy()
             self.db.init_app(self.app)
             # create all tables
             self.db.create_all()
-    
+
     def tearDown(self):
         # db_drop_and_create_all()
         pass
@@ -31,7 +33,7 @@ class PolyopsonyTest(unittest.TestCase):
 
         res = self.client().get('/land_listings')
         data = json.loads(res.data)
-        
+
         self.assertEqual(res.status_code, 200)
         self.assertTrue(data['success'])
         self.assertTrue(data['land_listings'])
@@ -44,11 +46,13 @@ class PolyopsonyTest(unittest.TestCase):
 
         self.assertEqual(res.status_code, 404)
         self.assertFalse(data['success'])
-    
+
     def test_get_land_listing_details_200(self):
         test_ids = create_test_land_listing()
 
-        res = self.client().get('/land_listings/' + test_ids['land_listing_id'])
+        res = self.client().get(
+            '/land_listings/' +
+            test_ids['land_listing_id'])
         data = json.loads(res.data)
 
         self.assertEqual(res.status_code, 200)
@@ -105,7 +109,7 @@ class PolyopsonyTest(unittest.TestCase):
 
         res = self.client().get('/funders')
         data = json.loads(res.data)
-        
+
         self.assertEqual(res.status_code, 200)
         self.assertTrue(data['success'])
         self.assertTrue(data['funders'])
@@ -115,7 +119,7 @@ class PolyopsonyTest(unittest.TestCase):
     def test_get_funders_404(self):
         res = self.client().get('/funders')
         data = json.loads(res.data)
-        
+
         self.assertEqual(res.status_code, 404)
         self.assertFalse(data['success'])
 
@@ -132,7 +136,7 @@ class PolyopsonyTest(unittest.TestCase):
 
         res = self.client().post('/funders', json=valid_funder)
         data = json.loads(res.data)
-        
+
         self.assertEqual(res.status_code, 200)
         self.assertTrue(data['success'])
         self.assertTrue(data['funder_id'])
@@ -149,7 +153,7 @@ class PolyopsonyTest(unittest.TestCase):
 
         res = self.client().post('/funders', json=invalid_funder)
         data = json.loads(res.data)
-        
+
         self.assertEqual(res.status_code, 422)
         self.assertFalse(data['success'])
 
@@ -210,9 +214,11 @@ class PolyopsonyTest(unittest.TestCase):
             'funder_id': funder_id
         }
 
-        res = self.client().post('/land_listings/' +
+        res = self.client().post(
+            '/land_listings/' +
             test_ids['land_listing_id'] + '/funds/' +
-            test_ids['initial_fund_id'], json=valid_contribution)
+            test_ids['initial_fund_id'], json=valid_contribution
+        )
         data = json.loads(res.data)
 
         self.assertEqual(res.status_code, 200)
@@ -231,9 +237,11 @@ class PolyopsonyTest(unittest.TestCase):
             'funder_id': funder_id
         }
 
-        res = self.client().post('/land_listings/' +
+        res = self.client().post(
+            '/land_listings/' +
             test_ids['land_listing_id'] + '/funds/' +
-            test_ids['initial_fund_id'], json=invalid_contribution)
+            test_ids['initial_fund_id'], json=invalid_contribution
+        )
         data = json.loads(res.data)
 
         self.assertEqual(res.status_code, 422)
@@ -245,7 +253,10 @@ class PolyopsonyTest(unittest.TestCase):
     def test_delete_contribution_200(self):
         test_ids = create_test_land_listing()
         funder_id = create_test_funder()
-        contribution_id = create_test_contribution(funder_id, test_ids['land_listing_id'], test_ids['initial_fund_id'])
+        contribution_id = create_test_contribution(
+            funder_id, test_ids['land_listing_id'],
+            test_ids['initial_fund_id']
+        )
 
         res = self.client().delete('/contributions/' + contribution_id)
         data = json.loads(res.data)
@@ -263,6 +274,7 @@ class PolyopsonyTest(unittest.TestCase):
 
         self.assertEqual(res.status_code, 404)
         self.assertFalse(data['success'])
+
 
 if __name__ == "__main__":
     unittest.main()
